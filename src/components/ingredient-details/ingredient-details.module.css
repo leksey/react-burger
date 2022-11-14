@@ -1,0 +1,23 @@
+.ingridient__details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.ingridient__details__header {
+    line-height: 64px;
+    align-self: flex-start;
+}
+
+.ingridient__details__img {
+    align-self: center;
+}
+
+.ingridient__details__macro {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    color: #8585AD;
+    gap: 20px;
+}
