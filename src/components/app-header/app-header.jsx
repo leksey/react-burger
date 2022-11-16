@@ -26,7 +26,7 @@ function AppHeader() {
                 </div>
             </nav>
         </header>
-    )
+    );
 }
 
 

@@ -4,7 +4,6 @@ import AppHeader from '../app-header/app-header';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients'
 import BurgerConstructor from '../burger-constructor/burger-constructor'
 import Modal from '../modal/modal'
-import ModalOverlay from '../modal-overlay/modal-overlay'
 import IngredientDetails from '../ingredient-details/ingredient-details'
 import OrderDetails from '../order-details/order-details'
 
@@ -16,10 +15,13 @@ function App() {
 
     const [state, setState] = useState({
         hasError: false,
-        ingredientModalVisible: false,
-        orderModalVisible: false,
+        errorText: '',
         data: [],
         details: {}
+    });
+    const [modalState, setModalState] = useState({
+        ingredientModalVisible: false,
+        orderModalVisible: false
     });
 
     useEffect(() => {
@@ -29,31 +31,34 @@ function App() {
     const getData = () => {
         setState({ ...state, hasError: false});
         fetch(dataUrl)
-            .then(res => res.json())
+            .then(res => {
+                if(res.ok) {
+                    return res.json()
+                }
+                return Promise.reject(`Ошибка: ${res.status}`);})
             .then(res => setState({ ...state, data: res.data}))
             .catch(e => {
-                setState({ ...state, hasError: true});
+                setState({ ...state, hasError: true, errorText: e});
         });
     };
-
-    // function openModalDetails() {
-    //     setState({ ...state, ingredientModalVisible: true});
-    //     console.log(state);
-    // }
 
     return (
     <>
         <AppHeader />
         <main className={appStyles.content}>
-            { state.hasError ? <h1>Server error</h1> : <BurgerIngredients state={state} setstate={setState}/>}
-            <BurgerConstructor state={state} setstate={setState}/>
+            { state.hasError ? <h1>{state.errorText}</h1> : <BurgerIngredients state={state} setstate={setState} modalState={modalState} setModalState={setModalState} />}
+            <BurgerConstructor setModalState={setModalState} modalState={modalState}/>
         </main>
-        {(state.ingredientModalVisible || state.orderModalVisible) && <ModalOverlay state={state} setstate={setState}>
-            <Modal state={state} setstate={setState}>
-                { !state.orderModalVisible && <IngredientDetails details={state.details} />}
-                { state.orderModalVisible && <OrderDetails />}
+        {modalState.ingredientModalVisible && (
+            <Modal modalState={modalState} setModalState={setModalState} >
+                <IngredientDetails details={state.details} />
             </Modal>
-        </ModalOverlay> }
+        )}
+        {modalState.orderModalVisible && (
+            <Modal modalState={modalState} setModalState={setModalState} >
+                <OrderDetails />
+            </Modal>
+        )}
     </>
   );
 }

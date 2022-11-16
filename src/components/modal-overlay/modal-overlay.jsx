@@ -1,17 +1,30 @@
-import React, { Children } from 'react';
-import ReactDOM from 'react-dom';
+import { useEffect } from 'react';
 import modalOverlayStyles from './modal-overlay.module.css';
+import { childrenType, setStateType, modalStateType } from '../utils/types';
 
-function ModalOverlay({ children, state, setstate }) {
-    const modalRoot = document.getElementById("root");
-    return ReactDOM.createPortal(
-        (
-            <div className={modalOverlayStyles.modal__overlay} onClick={() => setstate({ ...state, ingredientModalVisible: false, orderModalVisible: false })}>
+function ModalOverlay({ children, modalState, setModalState }) {
+
+    useEffect(() => {
+        function handleEscapeKey(evt) {
+          if (evt.key === 'Escape') {
+            setModalState({...modalState, ingredientModalVisible: false, orderModalVisible: false });
+          }
+        }
+        document.addEventListener('keydown', handleEscapeKey)
+        return () => document.removeEventListener('keydown', handleEscapeKey)
+      }, [modalState])
+
+    return (
+            <div className={modalOverlayStyles.modal__overlay} onClick={() => setModalState({...modalState, ingredientModalVisible: false, orderModalVisible: false })}>
                 {children}
             </div>
-        ), 
-        modalRoot
     );
 }
+
+ModalOverlay.propTypes =  {
+  children: childrenType,
+  modalState: modalStateType,
+  setModalState: setStateType
+};
 
 export default ModalOverlay;
