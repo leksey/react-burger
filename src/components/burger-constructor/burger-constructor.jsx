@@ -1,6 +1,6 @@
 import { ConstructorElement, Button, DragIcon, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import orderData from '../utils/order'
-import { setStateType, modalStateType } from '../utils/types';
+import orderData from '../../utils/order'
+import { setStateType, modalStateType } from '../../utils/types';
 import burgerConstructorStyles from './burger-constructor.module.css';
 
 function BurgerConstructor( {modalState, setModalState} ) {
@@ -23,8 +23,8 @@ function BurgerConstructor( {modalState, setModalState} ) {
                                 {!noDrag && <DragIcon type="primary" />}
                                 <ConstructorElement
                                 type={type}
-                                isLocked={true}
-                                text={ingridient.name}
+                                isLocked={ noDrag ? true : false}
+                                text={type === "top" ? ingridient.name + " (верх)" : (type === "bottom" ? ingridient.name + " (низ)" : ingridient.name)}
                                 price={ingridient.price}
                                 thumbnail={ingridient.image}
                                 />

@@ -1,5 +1,5 @@
 import ingredientDetailsStyles from './ingredient-details.module.css';
-import { ingredientType } from '../utils/types';
+import { ingredientType } from '../../utils/types';
 
 
 function IngredientDetails({ details }) {

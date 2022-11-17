@@ -19,6 +19,8 @@ export const ingredientType = PropTypes.shape(
 
 export const setStateType = PropTypes.func.isRequired;
 
+export const closePopupType = PropTypes.func.isRequired;
+
 export const stateType = PropTypes.shape({
         hasError: PropTypes.bool.isRequired,
         errorText: PropTypes.string.isRequired,

@@ -42,6 +42,10 @@ function App() {
         });
     };
 
+    function closePopup () {
+        setModalState({ingredientModalVisible: false, orderModalVisible: false})
+    }
+
     return (
     <>
         <AppHeader />
@@ -50,12 +54,12 @@ function App() {
             <BurgerConstructor setModalState={setModalState} modalState={modalState}/>
         </main>
         {modalState.ingredientModalVisible && (
-            <Modal modalState={modalState} setModalState={setModalState} >
+            <Modal closePopup={closePopup} modalState={modalState} setModalState={setModalState} >
                 <IngredientDetails details={state.details} />
             </Modal>
         )}
         {modalState.orderModalVisible && (
-            <Modal modalState={modalState} setModalState={setModalState} >
+            <Modal closePopup={closePopup} modalState={modalState} setModalState={setModalState} >
                 <OrderDetails />
             </Modal>
         )}

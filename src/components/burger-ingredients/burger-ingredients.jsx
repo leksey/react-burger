@@ -1,5 +1,5 @@
 import React from 'react';
-import { ingredientType, setStateType, stateType, modalStateType } from '../utils/types';
+import { ingredientType, setStateType, stateType, modalStateType } from '../../utils/types';
 import { Counter, Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 
 import burgerIngredientsStyles from './burger-ingredients.module.css';

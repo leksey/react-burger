@@ -1,21 +1,21 @@
 import { useEffect } from 'react';
 import modalOverlayStyles from './modal-overlay.module.css';
-import { childrenType, setStateType, modalStateType } from '../utils/types';
+import { childrenType, closePopupType } from '../../utils/types';
 
-function ModalOverlay({ children, modalState, setModalState }) {
+function ModalOverlay({ children, closePopup }) {
 
     useEffect(() => {
         function handleEscapeKey(evt) {
           if (evt.key === 'Escape') {
-            setModalState({...modalState, ingredientModalVisible: false, orderModalVisible: false });
+            closePopup();
           }
         }
         document.addEventListener('keydown', handleEscapeKey)
         return () => document.removeEventListener('keydown', handleEscapeKey)
-      }, [modalState])
+      }, [])
 
     return (
-            <div className={modalOverlayStyles.modal__overlay} onClick={() => setModalState({...modalState, ingredientModalVisible: false, orderModalVisible: false })}>
+            <div className={modalOverlayStyles.modal__overlay} onClick={() => closePopup()}>
                 {children}
             </div>
     );
@@ -23,8 +23,7 @@ function ModalOverlay({ children, modalState, setModalState }) {
 
 ModalOverlay.propTypes =  {
   children: childrenType,
-  modalState: modalStateType,
-  setModalState: setStateType
+  closePopup: closePopupType
 };
 
 export default ModalOverlay;
