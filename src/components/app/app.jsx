@@ -50,17 +50,17 @@ function App() {
     <>
         <AppHeader />
         <main className={appStyles.content}>
-            { state.hasError ? <h1>{state.errorText}</h1> : <BurgerIngredients state={state} setstate={setState} modalState={modalState} setModalState={setModalState} />}
+            { state.hasError ? <h1>{state.errorText}</h1> : <BurgerIngredients state={state} setstate={setState} modalState={modalState} setModalState={setModalState}/>}
             <BurgerConstructor setModalState={setModalState} modalState={modalState}/>
         </main>
         {modalState.ingredientModalVisible && (
-            <Modal closePopup={closePopup} modalState={modalState} setModalState={setModalState} >
-                <IngredientDetails details={state.details} />
+            <Modal closePopup={closePopup}>
+                <IngredientDetails details={state.details}/>
             </Modal>
         )}
         {modalState.orderModalVisible && (
-            <Modal closePopup={closePopup} modalState={modalState} setModalState={setModalState} >
-                <OrderDetails />
+            <Modal closePopup={closePopup}>
+                <OrderDetails/>
             </Modal>
         )}
     </>
