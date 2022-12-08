@@ -1,0 +1,16 @@
+.order__details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.order__details__num {
+    width: 520px;
+    height: 120px;
+}
+
+.order__details__done {
+    width: 120px;
+    height: 120px;
+}

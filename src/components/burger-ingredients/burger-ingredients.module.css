@@ -1,0 +1,54 @@
+.ingridients {
+    max-width: 600px;
+    justify-self: end;
+}
+
+.tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.ingridients__selector {
+    overflow-y: scroll;
+    max-height: 756px;
+}
+
+.ingridients__list {
+    list-style: none;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.ingridient {
+    width: 272px;
+    height: 208px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.ingridient__price {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+}
+
+.ingridient__name {
+    text-align: center;
+}
+
+.ingridients__selector::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+.ingridients__selector::-webkit-scrollbar-track {
+    background-color: #2F2F37;
+}
+
+.ingridients__selector::-webkit-scrollbar-thumb {
+    background: #8585AD; 
+}

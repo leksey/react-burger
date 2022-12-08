@@ -1,0 +1,42 @@
+.constructor {
+    max-width: 600px;
+    justify-self: start;
+    max-height: 912px;
+}
+
+.constructor__item {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.constructor__item:first-child {
+    list-style: none;
+    margin-left: 32px;
+}
+
+.constructor__item:last-child {
+    list-style: none;
+    margin-left: 32px;
+}
+
+.constructor__price {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.constructor::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+.constructor::-webkit-scrollbar-track {
+    background-color: #2F2F37;
+}
+
+.constructor::-webkit-scrollbar-thumb {
+    background: #8585AD; 
+}
