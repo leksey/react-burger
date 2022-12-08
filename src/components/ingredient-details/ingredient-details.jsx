@@ -1,8 +1,9 @@
+import React from 'react';
 import ingredientDetailsStyles from './ingredient-details.module.css';
 import { ingredientType } from '../../utils/types';
 
 
-function IngredientDetails({ details }) {
+const IngredientDetails = React.memo(({ details }) => {
     return (
             <div className={`${ingredientDetailsStyles.ingridient__details}`}>
                 <h2 className={`${ingredientDetailsStyles.ingridient__details__header} text text_type_main-large mt-10 ml-10 mr-10`}>Детали ингредиента</h2>
@@ -28,7 +29,7 @@ function IngredientDetails({ details }) {
                 </ul>
             </div>
         );
-}
+})
 
 IngredientDetails.propTypes =  {
     details: ingredientType

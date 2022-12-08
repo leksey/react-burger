@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
+import React from 'react';
 import modalOverlayStyles from './modal-overlay.module.css';
 import { childrenType, closePopupType } from '../../utils/types';
 
-function ModalOverlay({ children, closePopup }) {
+const ModalOverlay = React.memo(({ children, closePopup }) => {
 
     useEffect(() => {
         function handleEscapeKey(evt) {
@@ -19,7 +20,7 @@ function ModalOverlay({ children, closePopup }) {
                 {children}
             </div>
     );
-}
+})
 
 ModalOverlay.propTypes =  {
   children: childrenType,
