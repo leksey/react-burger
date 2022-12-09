@@ -4,79 +4,68 @@ import { ConstructorElement, Button, DragIcon, CurrencyIcon } from '@ya.praktiku
 import { setStateType, modalStateType } from '../../utils/types';
 import burgerConstructorStyles from './burger-constructor.module.css';
 import {BurgerConstructorContext, TotalPriceContext} from '../../services/appContext';
+import {sendOrder} from '../../utils/burger-api';
 
 const BurgerConstructor = React.memo( ( {modalState, setModalState} ) => {
     const { constructorState , setConstructorState} = useContext(BurgerConstructorContext);
     const { totalPriceState, totalPriceDispatcher } = useContext(TotalPriceContext);
-    const orderDataUrl = 'https://norma.nomoreparties.space/api/orders'
     const getOrderData = () => {
-        fetch(orderDataUrl, { 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: bodyOrder
-            
-        })
-            .then(res => {
-                if(res.ok) {
-                    return res.json()
-                }
-                return Promise.reject(`Ошибка: ${res.status}`);})
+        sendOrder(bodyOrder)
             .then(res => setConstructorState({...constructorState, orderNum: res.order.number}))
             .catch(e => { return `Ошибка`});
                 //setState({ ...state, hasError: true, errorText: e});
     };
-    let filteredData = filterBuns(constructorState.data);
-    const bodyOrder = `{"ingredients": [${filteredData.map(i => {return `"${i._id}"`})}]}`;
-    useEffect(() => {
-        totalPriceDispatcher({type: 'reset'});
-        filteredData.forEach(item => {
-            if (typeof item.price === "number"){
-                totalPriceDispatcher({type: 'add', price: item.price});
-            }  
-        })
-    },
-    [constructorState.data]
-    );
-
+    let bun = null;
     function filterBuns (data) {
         let result = [];
-        let bun = {};
         data.forEach(element => {
-            if(element.type === 'bun' && result.find(element => element.type === 'bun') === undefined) {
-                result.push(element);
+            if(element.type === 'bun' && bun === null) {
                 bun = structuredClone(element);
             } else if(element.type !== 'bun') {
                 result.push(element);
             }
         });
-        result.push(bun);
         return result;
     };
+
+    let ingridients = filterBuns(constructorState.data);
+    const bodyOrder = {"ingredients": ingridients.map(i => i._id)};
+    useEffect(() => {
+        totalPriceDispatcher({type: 'reset'});
+        ingridients.forEach(item => {
+            if (typeof item.price === "number"){
+                totalPriceDispatcher({type: 'add', price: item.price});
+            }
+        })
+        bun !== null && totalPriceDispatcher({type: 'add', price: bun.price*2});
+    },
+    [constructorState.data]
+    );
+
+    
     
 
     return (
         <section className={`${burgerConstructorStyles.constructor} mt-25`}>
-            <ul>
-                {
-                    filteredData.map((ingridient) => {
-                        let type = undefined;
-                        let noDrag = false; 
-                        if (filteredData.indexOf(ingridient) === 0) {
-                            type = "top";
-                            noDrag = true;
-                        } else if (filteredData.indexOf(ingridient) === filteredData.length-1) {
-                            type = "bottom";
-                            noDrag = true;
-                        }
-                        return (
-                            <li className={burgerConstructorStyles.constructor__item} key={filteredData.indexOf(ingridient)}>
-                                {!noDrag && <DragIcon type="primary" />}
+            <ul className={burgerConstructorStyles.constructor_list}>
+                {bun !== null && <li className={burgerConstructorStyles.constructor__item_bun}>
                                 <ConstructorElement
-                                type={type}
-                                isLocked={ noDrag ? true : false}
-                                text={type === "top" ? ingridient.name + " (верх)" : (type === "bottom" ? ingridient.name + " (низ)" : ingridient.name)}
+                                type="top"
+                                isLocked={true}
+                                text={bun.name + " (верх)"}
+                                price={bun.price}
+                                thumbnail={bun.image}
+                                />
+                </li>}
+                <div className={burgerConstructorStyles.constructor_inridients}>
+                {
+                    ingridients.map((ingridient) => {
+                        return (
+                            <li className={burgerConstructorStyles.constructor__item} key={ingridients.indexOf(ingridient)}>
+                                <DragIcon type="primary" />
+                                <ConstructorElement
+                                isLocked={false}
+                                text={ingridient.name}
                                 price={ingridient.price}
                                 thumbnail={ingridient.image}
                                 />
@@ -84,8 +73,18 @@ const BurgerConstructor = React.memo( ( {modalState, setModalState} ) => {
                         );
                     })
                 }
+                </div>
+                {bun !== null &&<li className={burgerConstructorStyles.constructor__item_bun}>
+                                <ConstructorElement
+                                type="bottom"
+                                isLocked={true}
+                                text={bun.name + " (низ)"}
+                                price={bun.price}
+                                thumbnail={bun.image}
+                                />
+                </li>}
             </ul>
-            <div className={`${burgerConstructorStyles.constructor__price} mt-10`}>
+            <div className={`${burgerConstructorStyles.constructor__price} mt-5`}>
                 <p className="text text_type_digits-medium mr-2">{totalPriceState.totalPrice > 0 ? totalPriceState.totalPrice : 0}</p>
                 <CurrencyIcon type="primary" />
                 <Button type="primary" size="medium" extraClass="ml-10" htmlType="submit" onClick={() => {setModalState({ ...modalState, orderModalVisible: true }); getOrderData()}}>

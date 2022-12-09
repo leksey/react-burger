@@ -10,6 +10,7 @@ import appStyles from './app.module.css';
 
 import {BurgerConstructorContext, TotalPriceContext} from '../../services/appContext';
 
+import {getIngredients} from '../../utils/burger-api';
 
 const totalPriceInitialState = { totalPrice: 0 };
 function reducer(state, action) {
@@ -26,15 +27,13 @@ function reducer(state, action) {
 
 function App() {
 
-    const dataUrl = 'https://norma.nomoreparties.space/api/ingredients';
-
     const [totalPriceState, totalPriceDispatcher] = useReducer(reducer, totalPriceInitialState, undefined);
     
     const [state, setState] = useState({
         hasError: false,
         errorText: '',
         data: [],
-        details: {}
+        details: null
     });
 
     const [constructorState, setConstructorState] = useState(
@@ -59,12 +58,7 @@ function App() {
 
     const getData = () => {
         setState({ ...state, hasError: false});
-        fetch(dataUrl)
-            .then(res => {
-                if(res.ok) {
-                    return res.json()
-                }
-                return Promise.reject(`Ошибка: ${res.status}`);})
+        getIngredients()
             .then(res => setState({ ...state, data: res.data}))
             .catch(e => {
                 setState({ ...state, hasError: true, errorText: e});
