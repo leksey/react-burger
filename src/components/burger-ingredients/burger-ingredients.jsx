@@ -4,7 +4,7 @@ import { Counter, Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger
 
 import burgerIngredientsStyles from './burger-ingredients.module.css';
 
-function BurgerIngredients({ state, setstate, modalState, setModalState }) {
+const BurgerIngredients = React.memo(({ state, setstate, modalState, setModalState }) => {
     const [current, setCurrent] = React.useState('sauces')
     return (
         <section className={burgerIngredientsStyles.ingridients}>
@@ -56,7 +56,7 @@ function BurgerIngredients({ state, setstate, modalState, setModalState }) {
             </div>
         </section>
     );
-}
+})
 
 function Ingredient({ ingridient , state, setstate, modalState, setModalState}) {
         function openModalDetails() {

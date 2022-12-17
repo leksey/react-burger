@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import React from 'react'
 import ModalOverlay from '../modal-overlay/modal-overlay'
 import { CloseIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { childrenType, closePopupType } from '../../utils/types';
@@ -6,7 +7,7 @@ import { childrenType, closePopupType } from '../../utils/types';
 import modalStyles from './modal.module.css';
 
 
-function Modal({ children, closePopup }) {
+const Modal = React.memo(({ children, closePopup }) => {
     const modalRoot = document.getElementById("root");
     return ReactDOM.createPortal((
         <ModalOverlay closePopup={closePopup}>
@@ -19,7 +20,7 @@ function Modal({ children, closePopup }) {
         </ModalOverlay>
         ), modalRoot
     );
-}
+})
 
 Modal.propTypes =  {
     children: childrenType,
