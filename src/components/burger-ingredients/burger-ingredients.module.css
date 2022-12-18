@@ -52,3 +52,9 @@
 .ingridients__selector::-webkit-scrollbar-thumb {
     background: #8585AD; 
 }
+
+.link {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
