@@ -1,5 +1,5 @@
 .constructor {
-    max-width: 600px;
+    width: 600px;
     justify-self: start;
     max-height: 912px;
 }
@@ -52,4 +52,14 @@
 
 .constructor_inridients::-webkit-scrollbar-thumb {
     background: #8585AD; 
+}
+
+.constructor__on_hover {
+    border: 1px solid #4C4CFF;
+    box-sizing: content-box;
+}
+
+.constructor__item__on_hover {
+    border: 1px solid #4C4CFF;
+    box-sizing: content-box;
 }

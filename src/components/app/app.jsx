@@ -1,87 +1,58 @@
-import React, { useState , useReducer, useEffect, StrictMode } from 'react';
+import React, { useState , useReducer, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import AppHeader from '../app-header/app-header';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients'
 import BurgerConstructor from '../burger-constructor/burger-constructor'
 import Modal from '../modal/modal'
 import IngredientDetails from '../ingredient-details/ingredient-details'
 import OrderDetails from '../order-details/order-details'
+import { getIngridients } from '../../services/actions/burger-ingredients'
+import { HIDE_INGREDIENT_DETAILS } from '../../services/actions/ingredient-details'
 
 import appStyles from './app.module.css';
 
-import {BurgerConstructorContext, TotalPriceContext} from '../../services/appContext';
-
-import {getIngredients} from '../../utils/burger-api';
-
-const totalPriceInitialState = { totalPrice: 0 };
-function reducer(state, action) {
-  switch (action.type) {
-    case "add":
-      return { totalPrice: state.totalPrice + action.price };
-    case "reset":
-      return { totalPrice: 0 };
-    default:
-      throw new Error(`Wrong type of action: ${action.type}`);
-  }
-}
-
-
 function App() {
+    const dispatch = useDispatch();
 
-    const [totalPriceState, totalPriceDispatcher] = useReducer(reducer, totalPriceInitialState, undefined);
-    
-    const [state, setState] = useState({
-        hasError: false,
-        errorText: '',
-        data: [],
-        details: null
-    });
+    useEffect(() => {
+        dispatch(getIngridients());
+    },[dispatch])
 
-    const [constructorState, setConstructorState] = useState(
-        {
-            orderNum: '-',
-            data: [],
-        }
-    );
+    const { hasError, itemsRequest,  } = useSelector(state => ({
+        hasError: state.burgerIngridients.hasError,
+        itemsRequest: state.burgerIngridients.itemsRequest
+    }));
+
+    const { ingredientDetails } = useSelector(state => ({
+        ingredientDetails: state.ingredientDetails.ingredientDetails
+    }));
 
     const [modalState, setModalState] = useState({
         ingredientModalVisible: false,
         orderModalVisible: false
     });
 
-    useEffect(() => {
-        getData();
-    },[])
-
-    useEffect(() => {
-        setConstructorState({...constructorState, data: state.data});
-    },[state])
-
-    const getData = () => {
-        setState({ ...state, hasError: false});
-        getIngredients()
-            .then(res => setState({ ...state, data: res.data}))
-            .catch(e => {
-                setState({ ...state, hasError: true, errorText: e});
-        });
-    };
-
     function closePopup () {
         setModalState({ingredientModalVisible: false, orderModalVisible: false})
     }
+    function closeIngredientDetailsPopup () {
+        dispatch({type: HIDE_INGREDIENT_DETAILS})
+    }
     
-
     return (
     <>
         <AppHeader />
-        <TotalPriceContext.Provider value={{ totalPriceState, totalPriceDispatcher }}>
-        <BurgerConstructorContext.Provider value={{constructorState, setConstructorState}}>
+        <DndProvider backend={HTML5Backend}>
         <main className={appStyles.content}>
-            { state.hasError ? <h1>{state.errorText}</h1> : <BurgerIngredients state={state} setstate={setState} modalState={modalState} setModalState={setModalState}/>}
+            { itemsRequest ? <h1>Загрузка...</h1> : hasError ? <h1>Ошибка</h1> : <BurgerIngredients />}
             <BurgerConstructor setModalState={setModalState} modalState={modalState}/>
         </main>
-        {modalState.ingredientModalVisible && (
-            <Modal closePopup={closePopup}>
-                <IngredientDetails details={state.details}/>
+        </DndProvider>
+        {ingredientDetails != null && (
+            <Modal closePopup={closeIngredientDetailsPopup}>
+                <IngredientDetails details={ingredientDetails}/>
             </Modal>
         )}
         {modalState.orderModalVisible && (
@@ -89,8 +60,6 @@ function App() {
                 <OrderDetails/>
             </Modal>
         )}
-        </BurgerConstructorContext.Provider>
-        </TotalPriceContext.Provider>
     </>
   );
 }
