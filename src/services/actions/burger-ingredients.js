@@ -9,17 +9,17 @@ export function getIngridients() {
         dispatch({
             type: GET_INGRIDIETNS_REQUEST
         });
-        getIngredients().then(res => {
-            if (res && res.success) {
+        getIngredients().then((res) => {
                 dispatch({
                     type: GET_INGRIDIETNS_SUCCESS,
                     items: res.data
                 });
-            } else {
+            })
+            .catch((error) => {
                 dispatch({
                     type: GET_INGRIDIETNS_FAILED
                 });
-            }
-        });
-    };
-}
+                console.log(error);
+            });
+        };
+};

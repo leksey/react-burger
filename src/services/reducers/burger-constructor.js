@@ -11,13 +11,23 @@ const initialState = {
 };
 
 export const burgerConstructorReducer = (state = initialState, action) => {
+    const swapIngredients = (arr, newIndex, oldIndex) => {
+        if (arr.length <= newIndex) {
+            let indx = newIndex - arr.length + 1;
+            while (indx-1) {
+                arr.push(undefined);
+            }
+        }
+        arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
+        return arr;
+    };
     switch (action.type) {
         case ADD_INGREDIENT: {
             return {
                 ...state,
                 constructorIngredients: [
                     ...state.constructorIngredients,
-                    { id: action.payload._id, data: action.payload },
+                    { uid: action.payload.uid, data: action.payload.data },
                 ],
             };
         }
@@ -25,7 +35,7 @@ export const burgerConstructorReducer = (state = initialState, action) => {
             return {
                 ...state,
                 constructorIngredients: [...state.constructorIngredients].filter(
-                    (item) => item.id !== action.payload
+                    (item) => item.uid !== action.payload
                 ),
             };
         }
@@ -51,13 +61,3 @@ export const burgerConstructorReducer = (state = initialState, action) => {
     }
 };
 
-const swapIngredients = (arr, newIndex, oldIndex) => {
-    if (arr.length <= newIndex) {
-        let indx = newIndex - arr.length + 1;
-        while (indx-1) {
-            arr.push(undefined);
-        }
-    }
-    arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
-    return arr;
-};

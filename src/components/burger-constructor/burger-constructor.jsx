@@ -3,10 +3,11 @@ import { useEffect, useRef } from 'react';
 import { useDrop, useDrag } from 'react-dnd';
 import { useSelector, useDispatch } from 'react-redux';
 import { ConstructorElement, Button, DragIcon, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import uuid from "react-uuid";
 import { setStateType, modalStateType } from '../../utils/types';
 import burgerConstructorStyles from './burger-constructor.module.css';
 import { ADD_INGREDIENT, REMOVE_INGREDIENT, SWAP_INGREDIENT, ADD_BUN } from '../../services/actions/burger-constructor';
-import { UPDATE_ORDER_TOTAL, getOrder } from '../../services/actions/order-details';
+import { UPDATE_ORDER_TOTAL, RESET_ORDER_NUM, getOrder } from '../../services/actions/order-details';
 
 const BurgerConstructor = React.memo(({ modalState, setModalState }) => {
     const dispatch = useDispatch();
@@ -18,7 +19,7 @@ const BurgerConstructor = React.memo(({ modalState, setModalState }) => {
         dispatch({ type: ADD_BUN, payload: ingredient });
     }
 
-    const addIngredient = (ingredient) => {
+    const addIngredient = ( ingredient ) => {
         dispatch({ type: ADD_INGREDIENT, payload: ingredient })
     }
 
@@ -32,34 +33,26 @@ const BurgerConstructor = React.memo(({ modalState, setModalState }) => {
                 addBun(item.ingridient);
             }
             else {
-                addIngredient(item.ingridient);
+                addIngredient({uid: uuid(), data: item.ingridient});
             }
         }
     })
-    
+
     useEffect(() => {
-        const orderBodyArray = [];
         let sum = 0;
         ingredients.forEach(item => {
             if (typeof item.data.price === "number") {
                 sum+=item.data.price;
-                orderBodyArray.push(item.data._id);
             }
         })
         if (bun !== null) {
             sum+= (bun.price * 2)
-            orderBodyArray.push(bun._id);
-            orderBodyArray.unshift(bun._id);
         }
         dispatch({ type: UPDATE_ORDER_TOTAL, payload: sum});
-        const bodyOrder = { "ingredients": orderBodyArray };
-        dispatch(getOrder(bodyOrder))
     },
         [ingredients, bun]
     );
-
     
-
     return (
         <section className={`${burgerConstructorStyles.constructor} ${isHover && burgerConstructorStyles.constructor__on_hover} mt-25`} ref={dropTarget}>
             <ul className={burgerConstructorStyles.constructor_list}>
@@ -76,7 +69,7 @@ const BurgerConstructor = React.memo(({ modalState, setModalState }) => {
                     {
                         ingredients.map((ingredient) => {
                             return (
-                            <ConstructorIngredient ingredient={ingredient} id={ingredients.indexOf(ingredient)}/>
+                            <ConstructorIngredient ingredient={ingredient} key={ingredient.uid} id={ingredients.indexOf(ingredient)}/>
                         );
                         })
                     }
@@ -94,7 +87,16 @@ const BurgerConstructor = React.memo(({ modalState, setModalState }) => {
             <div className={`${burgerConstructorStyles.constructor__price} mt-5`}>
                 <p className="text text_type_digits-medium mr-2">{totalPrice > 0 ? totalPrice : 0}</p>
                 <CurrencyIcon type="primary" />
-                <Button type="primary" size="medium" extraClass="ml-10" htmlType="submit" onClick={() => { setModalState({ ...modalState, orderModalVisible: true }); }}>
+                <Button type="primary" size="medium" extraClass="ml-10" htmlType="submit" 
+                    onClick={() => {
+                        dispatch({ type: RESET_ORDER_NUM });
+                        setModalState({ ...modalState, orderModalVisible: true });
+                        const ingidientsArr = ingredients.map(item => item.data._id);
+                        ingidientsArr.push(bun._id);
+                        ingidientsArr.unshift(bun._id);
+                        const bodyOrder = { "ingredients": ingidientsArr};
+                        dispatch(getOrder(bodyOrder));
+                    }}>
                     Оформить заказ
                 </Button>
             </div>
@@ -105,53 +107,51 @@ const BurgerConstructor = React.memo(({ modalState, setModalState }) => {
 
 function ConstructorIngredient ({ ingredient, id }) {
     const dispatch = useDispatch();
-    const removeIngredient = (id) => {
-        dispatch({ type: REMOVE_INGREDIENT, payload: id });
+    const removeIngredient = (uid) => {
+        dispatch({ type: REMOVE_INGREDIENT, payload: uid });
     }
 
-    const swapIngredient = (dragId, hoverId) => {
+    const swapIngredient = (hoverId, dragId) => {
         dispatch({ type: SWAP_INGREDIENT, hoverId, dragId});
     }
-    const [{ opacity },dragRef] = useDrag({
-        type: 'ingredient',
+    const [{ opacity }, dragRef] = useDrag({
+        type: 'burgerIngredient',
         item: {ingredient, id},
         collect: (monitor) => ({
             opacity: monitor.isDragging() ? 0.3 : 1
-        }),
-        
+        })
     });
     const [{ isHover }, dropRef] = useDrop ({
-        accept: 'ingredient',
-        collect:monitor => ({
-            isHover: monitor.isOver()
+        accept: 'burgerIngredient',
+        collect: monitor => ({
+            isSwap: monitor.isOver()
           }),
-          hover: (item, monitor) => {
-            swapIngredient(item.index, id);
-            item.index = id;
-        },
-    })
+          hover: (item) => {
+            swapIngredient(item.id, id);
+            item.id = id;
+        }
+    });
+
     const ref = useRef(null);
     const dragDropRef = dragRef(dropRef(ref));
 
     return (
-        <li draggable ref={dragDropRef} className={`${burgerConstructorStyles.constructor__item} ${isHover && burgerConstructorStyles.constructor__item__on_hover}`} key={id} style={{opacity}}>
+        <li draggable ref={dragDropRef} className={`${burgerConstructorStyles.constructor__item} ${isHover && burgerConstructorStyles.constructor__item__on_hover}`} style={{opacity}}>
             <DragIcon type="primary" />
             <ConstructorElement
                 isLocked={false}
                 text={ingredient.data.name}
                 price={ingredient.data.price}
                 thumbnail={ingredient.data.image}
-                handleClose={() => { removeIngredient(ingredient.id) }}
+                handleClose={() => { removeIngredient(ingredient.uid) }}
             />
         </li>
     );
 }
 
-
 BurgerConstructor.propTypes = {
     modalState: modalStateType,
     setModalState: setStateType
 };
-
 
 export default BurgerConstructor;

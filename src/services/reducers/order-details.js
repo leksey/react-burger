@@ -2,7 +2,8 @@ import {
     GET_ORDER_REQUEST,
     GET_ORDER_SUCCESS,
     GET_ORDER_FAILED,
-    UPDATE_ORDER_TOTAL
+    UPDATE_ORDER_TOTAL,
+    RESET_ORDER_NUM
 } from "../actions/order-details";
 
 const initialState = {
@@ -33,6 +34,12 @@ export const orderReducer = (state = initialState, action) => {
                 order: null,
                 orderRequest: false,
                 orderFailed: true
+            };
+        }
+        case RESET_ORDER_NUM: {
+            return {
+                ...state,
+                order: null,
             };
         }
         case UPDATE_ORDER_TOTAL: {
